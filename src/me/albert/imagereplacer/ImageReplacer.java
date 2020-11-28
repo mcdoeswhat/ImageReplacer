@@ -31,9 +31,11 @@ public class ImageReplacer extends JavaPlugin implements Listener {
                 List<String> contains = instance.getConfig().getStringList("custom." + section + ".contains");
                 List<String> equals = instance.getConfig().getStringList("custom." + section + ".equals");
                 File file = new File(URLDecoder.decode(instance.getConfig().getString("custom." + section + ".file")));
+                String messageString = instance.getConfig().getString("custom." + section + ".message");
                 if (contains != null)
                     for (String key : contains) {
                         if (text.contains(key)) {
+                            if (messageString!= null) return new PlainText(messageString);
                             BufferedImage bufferedImage = ImageIO.read(file);
                             return event.getTarget().uploadImageAsync(bufferedImage).get();
                         }
@@ -41,6 +43,7 @@ public class ImageReplacer extends JavaPlugin implements Listener {
                 if (equals != null)
                     for (String key : equals) {
                         if (text.equalsIgnoreCase(key)) {
+                            if (messageString!= null) return new PlainText(messageString);
                             BufferedImage bufferedImage = ImageIO.read(file);
                             return event.getTarget().uploadImageAsync(bufferedImage).get();
                         }
