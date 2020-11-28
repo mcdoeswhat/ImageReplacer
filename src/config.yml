@@ -2,6 +2,13 @@
 replace-length: 100
 custom:
   '1':
-    contains: ""
+    #消息包含以下信息会被替换为图片
+    contains:
+      - "xxx"
+      - "xxx2"
+    #消息等于以下信息会被替换为图片
+    equals:
+      - "xxxx"
+      - "xxxx2"
     file: "xxx.png"
 

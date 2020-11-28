@@ -1,5 +1,5 @@
 name: ImageReplacer
-version: 1.0.0
+version: 1.0.1
 main: me.albert.imagereplacer.ImageReplacer
 softdepend: [AmazingBot]
 commands:

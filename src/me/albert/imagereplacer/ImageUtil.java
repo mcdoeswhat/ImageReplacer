@@ -26,7 +26,7 @@ public class ImageUtil {
         int stringWidth = fm.charWidth('字');// 标点符号也算一个字
         int line_string_num = width % stringWidth == 0 ? (width / stringWidth) : (width / stringWidth) + 1;
         line_string_num = line_string_num * 2;
-        line_string_num-=10;
+        line_string_num -= 10;
         String[] strArr = text.split("\n");
         List<String> newList = new ArrayList<>();
         List<String> listStr = new ArrayList<>(Arrays.asList(strArr));

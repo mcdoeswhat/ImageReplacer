@@ -21,9 +21,41 @@ import java.util.List;
 
 public class ImageReplacer extends JavaPlugin implements Listener {
     private static int length = 100000;
+    private static ImageReplacer instance;
+
+    private static Message getMessageToReplace(GroupMessagePreSendEvent event) throws Exception {
+        Message message = event.getMessage();
+        if (message instanceof PlainText) {
+            String text = message.contentToString();
+            for (String section : instance.getConfig().getConfigurationSection("custom").getKeys(false)) {
+                List<String> contains = instance.getConfig().getStringList("custom." + section + ".contains");
+                List<String> equals = instance.getConfig().getStringList("custom." + section + ".equals");
+                File file = new File(URLDecoder.decode(instance.getConfig().getString("custom." + section + ".file")));
+                if (contains != null)
+                    for (String key : contains) {
+                        if (text.contains(key)) {
+                            BufferedImage bufferedImage = ImageIO.read(file);
+                            return event.getTarget().uploadImageAsync(bufferedImage).get();
+                        }
+                    }
+                if (equals != null)
+                    for (String key : equals) {
+                        if (text.equalsIgnoreCase(key)) {
+                            BufferedImage bufferedImage = ImageIO.read(file);
+                            return event.getTarget().uploadImageAsync(bufferedImage).get();
+                        }
+
+                    }
+
+            }
+
+        }
+        return null;
+    }
 
     @Override
     public void onEnable() {
+        instance = this;
         saveDefaultConfig();
         length = getConfig().getInt("replace-length");
         getServer().getPluginManager().registerEvents(this, this);
@@ -43,26 +75,14 @@ public class ImageReplacer extends JavaPlugin implements Listener {
         if (event.getEvent() instanceof GroupMessagePreSendEvent) {
             GroupMessagePreSendEvent preSendEvent = (GroupMessagePreSendEvent) event.getEvent();
             if (preSendEvent.getMessage() instanceof PlainText) {
-                String text = preSendEvent.getMessage().contentToString();
-                for (String section : getConfig().getConfigurationSection("custom").getKeys(false)) {
-                    String contains = getConfig().getString("custom." + section + ".contains");
-                    if (contains.isEmpty()) continue;
-                    File file = new File(URLDecoder.decode(getConfig().getString("custom." + section + ".file")));
-                    if (text.contains(contains)) {
-                        try {
-                            BufferedImage bufferedImage = ImageIO.read(file);
-                            Image image1 = preSendEvent.getTarget().uploadImageAsync(bufferedImage).get();
-                            preSendEvent.setMessage(image1);
-                            return;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-
-                        }
+                try {
+                    Message message1 = getMessageToReplace(preSendEvent);
+                    if (message1 != null) {
+                        preSendEvent.setMessage(message1);
                     }
-                }
-                if (text.length() > length) {
-                    Bot.getApi().getBot().getLogger().info("[ImageReplacer] 开始替换↑消息为图片");
-                    try {
+                    String text = preSendEvent.getMessage().contentToString();
+                    if (text.length() > length) {
+                        Bot.getApi().getBot().getLogger().info("[ImageReplacer] 开始替换↑消息为图片");
                         List<BufferedImage> images = ImageUtil.createImage(text, 720, 480, 24, 20);
                         Message message = null;
                         for (BufferedImage image : images) {
@@ -74,9 +94,9 @@ public class ImageReplacer extends JavaPlugin implements Listener {
                         }
                         if (message != null)
                             preSendEvent.setMessage(message);
-                    } catch (Exception ignored) {
 
                     }
+                } catch (Exception ignored) {
 
                 }
             }
