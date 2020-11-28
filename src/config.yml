@@ -1,0 +1,7 @@
+#字符超过数量则开始替换
+replace-length: 100
+custom:
+  '1':
+    contains: ""
+    file: "xxx.png"
+

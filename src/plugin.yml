@@ -1,0 +1,8 @@
+name: ImageReplacer
+version: 1.0.0
+main: me.albert.imagereplacer.ImageReplacer
+softdepend: [AmazingBot]
+commands:
+  imagereplacer:
+    permission: imagereplacer.admin
+    aliases: [imr]
